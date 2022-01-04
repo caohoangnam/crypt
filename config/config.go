@@ -9,6 +9,7 @@ import (
 	"github.com/caohoangnam/crypt/backend/consul"
 	"github.com/caohoangnam/crypt/backend/etcd"
 	"github.com/caohoangnam/crypt/backend/firestore"
+	"github.com/caohoangnam/crypt/backend/postgresql"
 	"github.com/caohoangnam/crypt/encoding/secconf"
 )
 
@@ -75,6 +76,15 @@ func NewStandardConsulConfigManager(machines []string) (ConfigManager, error) {
 	return NewStandardConfigManager(store)
 }
 
+// NewStandardPsqlConfigManager returns a new ConfigManager backed by postgresql.
+func NewStandardPsqlConfigManager(machines []string) (ConfigManager, error) {
+	store, err := postgresql.New(machines)
+	if err != nil {
+		return nil, err
+	}
+	return NewStandardConfigManager(store)
+}
+
 // NewFirestoreConfigManager returns a new ConfigManager backed by Firestore.
 // Data will be encrypted.
 func NewFirestoreConfigManager(machines []string, keystore io.Reader) (ConfigManager, error) {
@@ -99,6 +109,16 @@ func NewEtcdConfigManager(machines []string, keystore io.Reader) (ConfigManager,
 // Data will be encrypted.
 func NewConsulConfigManager(machines []string, keystore io.Reader) (ConfigManager, error) {
 	store, err := consul.New(machines)
+	if err != nil {
+		return nil, err
+	}
+	return NewConfigManager(store, keystore)
+}
+
+// NewPsqlConfigManager returns a new ConfigManager backed by postgresql.
+// Data will be encrypted.
+func NewPsqlConfigManager(machines []string, keystore io.Reader) (ConfigManager, error) {
+	store, err := postgresql.New(machines)
 	if err != nil {
 		return nil, err
 	}
